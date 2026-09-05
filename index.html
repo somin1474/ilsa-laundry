@@ -3,98 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>일사의 꽈리세탁소</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3efff;
+  color:#292238;
 }
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f1ff;
-    color: #25213a;
+header{
+  background:#7655c8;
+  color:white;
+  padding:20px;
+  text-align:center;
 }
-
-header {
-    background: #6d4aff;
-    color: white;
-    padding: 25px;
-    text-align: center;
+header h1{margin:0 0 8px}
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  justify-content:center;
+  background:#5d42a5;
+  padding:10px;
 }
-
-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    padding: 12px;
-    background: white;
+nav button{
+  border:0;
+  border-radius:10px;
+  padding:10px 13px;
+  background:white;
+  color:#5d42a5;
+  font-weight:bold;
 }
-
-button {
-    border: none;
-    border-radius: 10px;
-    padding: 11px 15px;
-    background: #6d4aff;
-    color: white;
-    font-weight: bold;
+main{
+  max-width:700px;
+  margin:auto;
+  padding:18px;
 }
-
-.page {
-    max-width: 850px;
-    margin: 20px auto;
-    padding: 0 15px;
+.card{
+  background:white;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 3px 12px #00000018;
 }
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 18px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px #0001;
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  margin:6px 0 12px;
+  border:1px solid #ccc;
+  border-radius:10px;
+  font-size:15px;
 }
-
-input,
-select,
-textarea {
-    width: 100%;
-    padding: 11px;
-    margin: 6px 0 12px;
-    border: 1px solid #ccc;
-    border-radius: 9px;
-    font-size: 16px;
+textarea{min-height:90px}
+button.action{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  padding:13px;
+  background:#7655c8;
+  color:white;
+  font-weight:bold;
+  font-size:15px;
 }
-
-label {
-    font-weight: bold;
+button.action:active{transform:scale(.98)}
+.hidden{display:none}
+.notice{
+  padding:12px;
+  border-radius:10px;
+  background:#eee8ff;
+  margin:10px 0;
 }
-
-.hidden {
-    display: none;
+.reservation{
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:14px;
+  margin:10px 0;
 }
-
-.reservation {
-    border: 1px solid #ddd;
-    padding: 12px;
-    border-radius: 12px;
-    margin: 10px 0;
+.small{font-size:13px;color:#777}
+.danger{
+  background:#ffe5e5;
+  color:#a00000;
+  padding:12px;
+  border-radius:10px;
 }
-
-.success {
-    color: green;
-}
-
-.error {
-    color: red;
-}
-
-.warning {
-    background: #fff1a8;
-    padding: 10px;
-    border-radius: 10px;
+.pixelated{
+  filter:blur(7px);
+  user-select:none;
 }
 </style>
 </head>
@@ -102,367 +100,1108 @@ label {
 <body>
 
 <header>
-    <h1>🧺 일사의 꽈리세탁소</h1>
-    <p>예약 · 문의 · 세탁 관리</p>
+  <h1>🧺 일사의 꽈리세탁소</h1>
+  <div id="loginStatus">로그인하지 않음</div>
 </header>
 
 <nav>
-    <button onclick="showPage('home')">홈</button>
-    <button onclick="showPage('auth')">로그인/회원가입</button>
-    <button onclick="showPage('search')">회원 검색</button>
-    <button onclick="showPage('reserve')">예약</button>
-    <button onclick="showPage('verify')">예약 인증</button>
-    <button onclick="showPage('mypage')">내 예약</button>
+  <button onclick="showPage('home')">홈</button>
+  <button onclick="showPage('auth')">로그인/가입</button>
+  <button onclick="showPage('search')">회원 찾기</button>
+  <button onclick="showPage('reserve')">예약</button>
+  <button onclick="showPage('verify')">예약 인증</button>
+  <button onclick="showPage('mypage')">내 예약</button>
+  <button onclick="showPage('inquiry')">문의</button>
 </nav>
 
-
-<main class="page">
+<main>
 
 <!-- 홈 -->
-<section id="home" class="card page">
-    <h2>어서 오세요!</h2>
+<section id="home" class="page">
+  <div class="card">
+    <h2>🧺 일사의 꽈리세탁소</h2>
+    <p>세탁소 예약 시스템입니다.</p>
+    <div class="notice">
+      예약은 <b>현재 시간으로부터 최소 24시간 이후</b>만 가능합니다.
+    </div>
+  </div>
 
-    <p>
-        일사의 꽈리세탁소 온라인 예약 시스템입니다.
-    </p>
-
-    <p>
-        이 사이트는 실제 세탁소와 관계없는 창작용 사이트입니다.
-    </p>
-
-    <h3>📌 이용 방법</h3>
-
-    <ol>
-        <li>회원가입</li>
-        <li>로그인</li>
-        <li>예약 상대방 검색</li>
-        <li>예약 작성</li>
-        <li>예약 인증</li>
-    </ol>
+  <div id="homeProfile"></div>
 </section>
 
+<!-- 로그인/회원가입 -->
+<section id="auth" class="page hidden">
 
-<!-- 로그인 / 회원가입 -->
-<section id="auth" class="card page hidden">
+  <div class="card">
+    <h2>로그인</h2>
 
-    <button onclick="authMode('login')">
-        로그인
-    </button>
+    <label>사용자 이름</label>
+    <input id="loginUsername" placeholder="예: 홍길동1234">
 
-    <button onclick="authMode('signup')">
-        회원가입
-    </button>
+    <label>비밀번호</label>
+    <input id="loginPassword" type="password">
 
+    <button class="action" onclick="login()">로그인</button>
+  </div>
 
-    <!-- 로그인 -->
-    <div id="loginBox">
+  <div class="card">
+    <h2>회원가입</h2>
 
-        <h2>로그인</h2>
+    <label>사용자 이름</label>
+    <input id="signupUsername" placeholder="예: 홍길동1234">
 
-        <input
-            id="loginId"
-            placeholder="아이디"
-        >
+    <label>비밀번호</label>
+    <input id="signupPassword" type="password">
 
-        <input
-            id="loginPw"
-            type="password"
-            placeholder="비밀번호"
-        >
+    <label>표시 이름</label>
+    <input id="signupDisplayName" placeholder="다른 사람에게 표시될 이름">
 
-        <button onclick="login()">
-            로그인
-        </button>
-
+    <div class="small">
+      • 사용자 이름은 중복될 수 없습니다.<br>
+      • 비밀번호는 8자 이상이어야 합니다.<br>
+      • 1, 4, 7만으로 이루어진 비밀번호는 사용할 수 없습니다.
     </div>
 
-
-    <!-- 회원가입 -->
-    <div id="signupBox" class="hidden">
-
-        <h2>회원가입</h2>
-
-        <input
-            id="signupId"
-            placeholder="아이디"
-        >
-
-        <input
-            id="signupPw"
-            type="password"
-            placeholder="비밀번호"
-        >
-
-        <input
-            id="displayName"
-            placeholder="표시 아이디"
-        >
-
-        <p>
-            비밀번호는 8자리 이상이어야 합니다.
-        </p>
-
-        <p>
-            비밀번호 전체가 1, 4, 7 숫자만으로 이루어질 수 없습니다.
-        </p>
-
-        <button onclick="signup()">
-            회원가입
-        </button>
-
-    </div>
-
-    <p id="authMessage"></p>
+    <button class="action" onclick="signup()">회원가입</button>
+  </div>
 
 </section>
 
+<!-- 회원 찾기 -->
+<section id="search" class="page hidden">
+  <div class="card">
+    <h2>🔎 회원 찾기</h2>
 
-<!-- 회원 검색 -->
-<section id="search" class="card page hidden">
+    <input id="searchText" placeholder="사용자 이름 또는 표시 이름">
 
-    <h2>🔎 회원 검색</h2>
-
-    <input
-        id="searchInput"
-        placeholder="아이디 또는 표시 아이디"
-    >
-
-    <button onclick="searchUsers()">
-        검색
-    </button>
+    <button class="action" onclick="searchUsers()">검색</button>
 
     <div id="searchResult"></div>
-
+  </div>
 </section>
-
 
 <!-- 예약 -->
-<section id="reserve" class="card page hidden">
+<section id="reserve" class="page hidden">
+  <div class="card">
+    <h2>📅 세탁 예약</h2>
 
-    <h2>🧺 예약하기</h2>
-
-    <p id="loginStatus"></p>
-
-    <label>
-        예약 상대방 아이디
-    </label>
-
-    <input
-        id="targetId"
-        placeholder="아이디 입력"
-    >
-
-
-    <label>
-        날짜
-    </label>
-
-    <input
-        id="reservationDate"
-        type="datetime-local"
-    >
-
-
-    <label>
-        옵션
-    </label>
-
-    <select id="option">
-        <option>다르</option>
-        <option>소발패</option>
-        <option>파</option>
-    </select>
-
-
-    <label>
-        비고
-    </label>
-
-    <textarea
-        id="note"
-        rows="4"
-        placeholder="전달할 내용을 입력하세요."
-    ></textarea>
-
-
-    <button onclick="makeReservation()">
-        예약하기
-    </button>
-
-    <p id="reservationMessage"></p>
-
-</section>
-
-
-<!-- 예약 인증 -->
-<section id="verify" class="card page hidden">
-
-    <h2>📜 예약 인증 증명서 작성장</h2>
-
-    <p>
-        예약을 지켰다면 아래 문구를 정확하게 입력하세요.
-    </p>
-
-    <input
-        id="verifyReservationId"
-        placeholder="예약 번호"
-    >
-
-    <input
-        id="verifyText"
-        placeholder="인증 문구"
-    >
-
-    <button onclick="verifyReservation()">
-        인증하기
-    </button>
-
-    <p id="verifyMessage"></p>
-
-    <div class="warning">
-        인증 문구:<br>
-        <b>나세탁소갔으니꽈경고주쥐마쇰</b>
+    <div id="reserveLoginNotice" class="notice">
+      예약하려면 먼저 로그인해주세요.
     </div>
 
+    <label>예약할 사람의 사용자 이름</label>
+    <input id="reserveUsername" placeholder="예: 홍길동1234">
+
+    <label>예약 날짜와 시간</label>
+    <input id="reserveDate" type="datetime-local">
+
+    <label>옵션</label>
+    <select id="reserveOption">
+      <option value="다르">다르</option>
+      <option value="소발패">소발패</option>
+      <option value="파">파</option>
+    </select>
+
+    <label>메모</label>
+    <textarea id="reserveNote" placeholder="전달할 내용을 적어주세요."></textarea>
+
+    <button class="action" onclick="makeReservation()">예약하기</button>
+
+    <div id="reserveResult"></div>
+  </div>
 </section>
 
-
-<!-- 내 예약 -->
-<section id="mypage" class="card page hidden">
-
-    <h2>📋 내 예약</h2>
-
-    <p id="myAccount"></p>
-
-    <div id="myReservations"></div>
-
-</section>
-
-
-<!-- 문의 -->
-<section class="card">
-
-    <h2>📞 문의</h2>
+<!-- 예약 인증 -->
+<section id="verify" class="page hidden">
+  <div class="card">
+    <h2>🧾 예약 인증 증명서 작성장</h2>
 
     <p>
-        시스템 오류가 발생했다면
-        <b>010-2626-1307</b>로 전화하세요.
+      예약 후 방문했다면 아래에 인증 문구를 정확하게 입력해주세요.
     </p>
 
+    <div class="notice">
+      인증 문구:<br>
+      <b>나세탁소갔으니꽈경고주쥐마쇰</b>
+    </div>
+
+    <label>예약 ID</label>
+    <input id="verifyId" placeholder="내 예약의 ID">
+
+    <label>인증 문구</label>
+    <input id="verifyPhrase">
+
+    <button class="action" onclick="verifyReservation()">
+      예약 인증하기
+    </button>
+
+    <div id="verifyResult"></div>
+  </div>
+</section>
+
+<!-- 내 예약 -->
+<section id="mypage" class="page hidden">
+  <div class="card">
+    <h2>📋 내 예약</h2>
+
+    <div id="profileBox"></div>
+    <div id="myReservations"></div>
+  </div>
+</section>
+
+<!-- 문의 -->
+<section id="inquiry" class="page hidden">
+  <div class="card">
+    <h2>☎️ 시스템 문의</h2>
+
+    <p>시스템 오류가 발생했다면 아래 번호로 문의해주세요.</p>
+
+    <h2>010-2626-1307</h2>
+  </div>
 </section>
 
 </main>
 
-
 <script>
+/* =====================================================
+   SUPABASE 설정
+   ===================================================== */
 
-/* -------------------------
-   데이터 저장
-------------------------- */
+const SUPABASE_URL = "https://sxdpukkktgaldfmchohf.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_3-EQXsXVJNC_l7dV1ctv3A_M8-EsSW-";
 
-const STORAGE_KEY = "ilsa_laundry";
-
-let database = JSON.parse(
-    localStorage.getItem(STORAGE_KEY)
-    ||
-    '{"users":[],"reservations":[]}'
-);
-
-let currentUser =
-    localStorage.getItem("currentUser") || "";
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-function saveDatabase() {
+/* =====================================================
+   기본 설정
+   ===================================================== */
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(database)
+const VERIFY_PHRASE =
+  "나세탁소갔으니꽈경고주쥐마쇰";
+
+
+function showPage(page){
+
+  document.querySelectorAll(".page")
+    .forEach(x => x.classList.add("hidden"));
+
+  document.getElementById(page)
+    .classList.remove("hidden");
+
+  if(page === "mypage"){
+    loadMyPage();
+  }
+
+  if(page === "home"){
+    loadHome();
+  }
+}
+
+
+/* =====================================================
+   현재 로그인 사용자
+   ===================================================== */
+
+let currentUser = null;
+let currentProfile = null;
+
+
+async function loadUser(){
+
+  const {
+    data:{user}
+  } = await supabaseClient.auth.getUser();
+
+  currentUser = user || null;
+
+  if(!currentUser){
+    currentProfile = null;
+    updateHeader();
+    return;
+  }
+
+  const {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .single();
+
+  if(error){
+    console.error(error);
+    currentProfile = null;
+  }else{
+    currentProfile = data;
+  }
+
+  updateHeader();
+  loadHome();
+}
+
+
+function updateHeader(){
+
+  const box =
+    document.getElementById("loginStatus");
+
+  if(!currentUser){
+    box.textContent =
+      "로그인하지 않음";
+    return;
+  }
+
+  let name =
+    currentProfile?.display_name ||
+    currentProfile?.username ||
+    "사용자";
+
+  if(currentProfile?.pixelated){
+    name = "████████";
+  }
+
+  box.textContent =
+    "로그인: " + name;
+}
+
+
+/* =====================================================
+   회원가입
+   ===================================================== */
+
+function validUsername(username){
+
+  if(!username) return false;
+
+  /*
+    사용자 이름에 공백이 들어가는 것을 막음
+  */
+  if(/\s/.test(username)){
+    return false;
+  }
+
+  return true;
+}
+
+
+function validPassword(password){
+
+  if(password.length < 8){
+    return false;
+  }
+
+  /*
+    1,4,7만으로 이루어진 비밀번호 금지
+  */
+  if(/^[147]+$/.test(password)){
+    return false;
+  }
+
+  return true;
+}
+
+
+async function signup(){
+
+  const username =
+    document
+      .getElementById("signupUsername")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const password =
+    document
+      .getElementById("signupPassword")
+      .value;
+
+  const displayName =
+    document
+      .getElementById("signupDisplayName")
+      .value
+      .trim();
+
+  if(!validUsername(username)){
+    alert("사용자 이름을 올바르게 입력해주세요.");
+    return;
+  }
+
+  if(!validPassword(password)){
+    alert(
+      "비밀번호는 8자 이상이어야 하며\n" +
+      "1, 4, 7만으로 이루어질 수 없습니다."
+    );
+    return;
+  }
+
+  if(!displayName){
+    alert("표시 이름을 입력해주세요.");
+    return;
+  }
+
+
+  /*
+    먼저 사용자 이름 중복 확인
+  */
+  const {data:existing,error:searchError} =
+    await supabaseClient
+      .from("profiles")
+      .select("id")
+      .eq("username",username)
+      .maybeSingle();
+
+  if(searchError){
+    alert("회원 확인 중 오류가 발생했습니다.");
+    console.error(searchError);
+    return;
+  }
+
+  if(existing){
+    alert("이미 사용 중인 사용자 이름입니다.");
+    return;
+  }
+
+
+  /*
+    Supabase Auth는 이메일 형식을 사용하므로
+    내부적으로 가짜 이메일 주소를 사용한다.
+  */
+  const fakeEmail =
+    username + "@ilsa-laundry.local";
+
+
+  const {data,error} =
+    await supabaseClient.auth.signUp({
+      email:fakeEmail,
+      password:password
+    });
+
+  if(error){
+    alert("회원가입 실패:\n" + error.message);
+    return;
+  }
+
+  if(!data.user){
+    alert("회원가입에 실패했습니다.");
+    return;
+  }
+
+
+  /*
+    profiles에 사용자 정보 저장
+  */
+  const {error:profileError} =
+    await supabaseClient
+      .from("profiles")
+      .insert({
+        id:data.user.id,
+        username:username,
+        display_name:displayName
+      });
+
+  if(profileError){
+
+    console.error(profileError);
+
+    alert(
+      "계정은 만들어졌지만 프로필 저장에 실패했습니다.\n" +
+      "관리자에게 문의해주세요."
     );
 
+    return;
+  }
+
+
+  alert("회원가입이 완료되었습니다!");
+
+  document.getElementById("signupUsername").value="";
+  document.getElementById("signupPassword").value="";
+  document.getElementById("signupDisplayName").value="";
+
+  await loginWithUser(username,password);
 }
 
 
-/* -------------------------
-   페이지 이동
-------------------------- */
+/* =====================================================
+   로그인
+   ===================================================== */
 
-function showPage(page) {
+async function login(){
 
+  const username =
     document
-        .querySelectorAll(".page")
-        .forEach(element => {
+      .getElementById("loginUsername")
+      .value
+      .trim()
+      .toLowerCase();
 
-            element.classList.add("hidden");
-
-        });
-
+  const password =
     document
-        .getElementById(page)
-        .classList.remove("hidden");
+      .getElementById("loginPassword")
+      .value;
+
+  if(!username || !password){
+    alert("사용자 이름과 비밀번호를 입력해주세요.");
+    return;
+  }
+
+  await loginWithUser(username,password);
+}
 
 
-    if (page === "reserve") {
+async function loginWithUser(username,password){
 
-        updateLoginStatus();
+  const fakeEmail =
+    username + "@ilsa-laundry.local";
 
+  const {data,error} =
+    await supabaseClient.auth.signInWithPassword({
+      email:fakeEmail,
+      password:password
+    });
+
+  if(error){
+    alert("로그인 실패:\n" + error.message);
+    return;
+  }
+
+  currentUser = data.user;
+
+  await loadUser();
+
+  alert("로그인되었습니다!");
+
+  showPage("home");
+}
+
+
+/* =====================================================
+   로그아웃
+   ===================================================== */
+
+async function logout(){
+
+  await supabaseClient.auth.signOut();
+
+  currentUser=null;
+  currentProfile=null;
+
+  updateHeader();
+  loadHome();
+
+  alert("로그아웃되었습니다.");
+}
+
+
+/* =====================================================
+   홈
+   ===================================================== */
+
+function loadHome(){
+
+  const box =
+    document.getElementById("homeProfile");
+
+  if(!currentUser){
+
+    box.innerHTML = `
+      <div class="card">
+        <p>로그인하면 세탁소 서비스를 이용할 수 있습니다.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  let name =
+    currentProfile?.display_name ||
+    currentProfile?.username ||
+    "사용자";
+
+  if(currentProfile?.pixelated){
+    name = `<span class="pixelated">${escapeHtml(name)}</span>`;
+  }else{
+    name = escapeHtml(name);
+  }
+
+  box.innerHTML = `
+    <div class="card">
+      <h3>환영합니다!</h3>
+      <p>표시 이름: ${name}</p>
+      <p>사용자 이름: ${escapeHtml(currentProfile.username)}</p>
+      <p>경고 횟수: ${currentProfile.warning_count || 0}</p>
+      ${
+        currentProfile.pixelated
+        ? `<div class="danger">
+             ⚠️ 경고가 14회 누적되어 계정이 픽셀화되었습니다.
+           </div>`
+        : ""
+      }
+      <br>
+      <button class="action" onclick="logout()">로그아웃</button>
+    </div>
+  `;
+}
+
+
+/* =====================================================
+   회원 검색
+   ===================================================== */
+
+async function searchUsers(){
+
+  if(!currentUser){
+    alert("먼저 로그인해주세요.");
+    return;
+  }
+
+  const text =
+    document
+      .getElementById("searchText")
+      .value
+      .trim()
+      .toLowerCase();
+
+  if(!text){
+    alert("검색어를 입력해주세요.");
+    return;
+  }
+
+
+  const {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("username,display_name,pixelated")
+      .or(
+        `username.ilike.%${escapeForQuery(text)}%,display_name.ilike.%${escapeForQuery(text)}%`
+      )
+      .limit(20);
+
+  const result =
+    document.getElementById("searchResult");
+
+  if(error){
+
+    console.error(error);
+
+    result.innerHTML =
+      `<div class="danger">검색 중 오류가 발생했습니다.</div>`;
+
+    return;
+  }
+
+  if(!data || data.length===0){
+
+    result.innerHTML =
+      `<div class="notice">검색 결과가 없습니다.</div>`;
+
+    return;
+  }
+
+
+  result.innerHTML =
+    data.map(user => {
+
+      let name =
+        escapeHtml(user.display_name);
+
+      if(user.pixelated){
+        name =
+          `<span class="pixelated">${name}</span>`;
+      }
+
+      return `
+        <div class="reservation">
+          <b>${name}</b><br>
+          <span class="small">
+            사용자 이름: ${escapeHtml(user.username)}
+          </span>
+          <br><br>
+          <button class="action"
+            onclick="chooseReservationUser('${escapeHtml(user.username)}')">
+            이 사람으로 예약
+          </button>
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+function chooseReservationUser(username){
+
+  document.getElementById("reserveUsername").value =
+    username;
+
+  showPage("reserve");
+}
+
+
+/* =====================================================
+   예약
+   ===================================================== */
+
+async function makeReservation(){
+
+  if(!currentUser){
+    alert("먼저 로그인해주세요.");
+    return;
+  }
+
+  const username =
+    document
+      .getElementById("reserveUsername")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const dateValue =
+    document.getElementById("reserveDate").value;
+
+  const option =
+    document.getElementById("reserveOption").value;
+
+  const note =
+    document.getElementById("reserveNote").value;
+
+
+  if(!username || !dateValue){
+    alert("예약 대상과 예약 날짜를 입력해주세요.");
+    return;
+  }
+
+
+  /*
+    24시간 제한
+  */
+  const reservationDate =
+    new Date(dateValue);
+
+  const minimum =
+    new Date(Date.now() + 24*60*60*1000);
+
+  if(reservationDate < minimum){
+
+    alert(
+      "예약은 현재 시간으로부터\n" +
+      "최소 24시간 이후만 가능합니다."
+    );
+
+    return;
+  }
+
+
+  /*
+    예약 대상 검색
+  */
+  const {data:target,error:targetError} =
+    await supabaseClient
+      .from("profiles")
+      .select("id,username")
+      .eq("username",username)
+      .maybeSingle();
+
+  if(targetError || !target){
+
+    alert("해당 사용자를 찾을 수 없습니다.");
+
+    return;
+  }
+
+
+  const {data,error} =
+    await supabaseClient
+      .from("reservations")
+      .insert({
+        from_user:currentUser.id,
+        to_user:target.id,
+        reservation_date:reservationDate.toISOString(),
+        option:option,
+        note:note,
+        verified:false,
+        status:"예약됨"
+      })
+      .select()
+      .single();
+
+  if(error){
+
+    console.error(error);
+
+    alert(
+      "예약 실패:\n" +
+      error.message
+    );
+
+    return;
+  }
+
+
+  document.getElementById("reserveResult").innerHTML = `
+    <div class="notice">
+      ✅ 예약이 완료되었습니다!<br><br>
+      예약 ID:<br>
+      <b>${escapeHtml(data.id)}</b>
+    </div>
+  `;
+
+  document.getElementById("reserveNote").value="";
+}
+
+
+/* =====================================================
+   예약 인증
+   ===================================================== */
+
+async function verifyReservation(){
+
+  if(!currentUser){
+    alert("먼저 로그인해주세요.");
+    return;
+  }
+
+  const id =
+    document
+      .getElementById("verifyId")
+      .value
+      .trim();
+
+  const phrase =
+    document
+      .getElementById("verifyPhrase")
+      .value;
+
+  if(!id || !phrase){
+    alert("예약 ID와 인증 문구를 입력해주세요.");
+    return;
+  }
+
+  if(phrase !== VERIFY_PHRASE){
+
+    alert("인증 문구가 정확하지 않습니다.");
+
+    return;
+  }
+
+
+  /*
+    예약 조회
+  */
+  const {data:reservation,error} =
+    await supabaseClient
+      .from("reservations")
+      .select("*")
+      .eq("id",id)
+      .maybeSingle();
+
+  if(error || !reservation){
+
+    alert("예약을 찾을 수 없습니다.");
+
+    return;
+  }
+
+
+  if(
+    reservation.from_user !== currentUser.id &&
+    reservation.to_user !== currentUser.id
+  ){
+
+    alert("이 예약을 인증할 권한이 없습니다.");
+
+    return;
+  }
+
+
+  if(reservation.status === "미방문"){
+
+    alert("이미 미방문 처리된 예약입니다.");
+
+    return;
+  }
+
+
+  /*
+    예약 시간이 아직 오지 않았으면 인증 불가
+  */
+  if(
+    new Date(reservation.reservation_date) > new Date()
+  ){
+
+    alert("예약 시간이 지난 후 인증해주세요.");
+
+    return;
+  }
+
+
+  /*
+    현재 RLS에서는 UPDATE가 제한될 수 있으므로
+    RPC가 존재하면 사용한다.
+  */
+  const {data,error:rpcError} =
+    await supabaseClient.rpc(
+      "verify_reservation",
+      {
+        p_reservation_id:id
+      }
+    );
+
+  if(rpcError){
+
+    console.error(rpcError);
+
+    alert(
+      "인증 처리에 실패했습니다.\n" +
+      "Supabase의 인증용 SQL 설정이 필요합니다."
+    );
+
+    return;
+  }
+
+
+  document.getElementById("verifyResult").innerHTML =
+    `<div class="notice">
+      ✅ 예약 인증이 완료되었습니다!
+    </div>`;
+
+  await loadUser();
+}
+
+
+/* =====================================================
+   내 예약
+   ===================================================== */
+
+async function loadMyPage(){
+
+  if(!currentUser){
+
+    document.getElementById("profileBox").innerHTML =
+      `<div class="notice">먼저 로그인해주세요.</div>`;
+
+    document.getElementById("myReservations").innerHTML="";
+    return;
+  }
+
+
+  await loadUser();
+
+
+  let displayName =
+    escapeHtml(
+      currentProfile?.display_name || ""
+    );
+
+  if(currentProfile?.pixelated){
+
+    displayName =
+      `<span class="pixelated">${displayName}</span>`;
+  }
+
+
+  document.getElementById("profileBox").innerHTML = `
+    <div class="notice">
+      <b>${displayName}</b><br>
+      사용자 이름:
+      ${escapeHtml(currentProfile.username)}<br>
+      경고 횟수:
+      ${currentProfile.warning_count || 0}
+    </div>
+  `;
+
+
+  /*
+    과거 미인증 예약 처리
+  */
+  await processMissedReservations();
+
+
+  const {data,error} =
+    await supabaseClient
+      .from("reservations")
+      .select("*")
+      .or(
+        `from_user.eq.${currentUser.id},to_user.eq.${currentUser.id}`
+      )
+      .order("reservation_date",{ascending:false});
+
+
+  const box =
+    document.getElementById("myReservations");
+
+
+  if(error){
+
+    console.error(error);
+
+    box.innerHTML =
+      `<div class="danger">예약을 불러오지 못했습니다.</div>`;
+
+    return;
+  }
+
+
+  if(!data || data.length===0){
+
+    box.innerHTML =
+      `<div class="notice">예약이 없습니다.</div>`;
+
+    return;
+  }
+
+
+  box.innerHTML =
+    data.map(r => {
+
+      const date =
+        new Date(r.reservation_date)
+          .toLocaleString("ko-KR");
+
+
+      return `
+        <div class="reservation">
+          <b>예약 ID</b><br>
+          <span class="small">
+            ${escapeHtml(r.id)}
+          </span>
+
+          <p>📅 ${escapeHtml(date)}</p>
+          <p>🧺 옵션: ${escapeHtml(r.option)}</p>
+          <p>📝 메모: ${escapeHtml(r.note || "")}</p>
+          <p>상태: <b>${escapeHtml(r.status)}</b></p>
+
+          ${
+            r.verified
+            ? `<p>✅ 인증 완료</p>`
+            : ""
+          }
+
+          ${
+            r.status === "예약됨"
+            ? `
+              <button class="action"
+                onclick="prepareVerify('${escapeHtml(r.id)}')">
+                이 예약 인증하기
+              </button>
+            `
+            : ""
+          }
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+function prepareVerify(id){
+
+  document.getElementById("verifyId").value=id;
+
+  showPage("verify");
+}
+
+
+/* =====================================================
+   미방문 예약 처리
+   ===================================================== */
+
+async function processMissedReservations(){
+
+  if(!currentUser) return;
+
+
+  /*
+    과거의 예약 중 아직 인증되지 않은 것 확인
+  */
+  const {data,error} =
+    await supabaseClient
+      .from("reservations")
+      .select("id,reservation_date,status,verified")
+      .or(
+        `from_user.eq.${currentUser.id},to_user.eq.${currentUser.id}`
+      )
+      .eq("verified",false)
+      .eq("status","예약됨")
+      .lt("reservation_date",new Date().toISOString());
+
+
+  if(error || !data) return;
+
+
+  /*
+    실제 경고 증가는 Supabase RPC에서 처리한다.
+    그래서 사용자가 브라우저에서 숫자를 마음대로 바꾸기 어렵다.
+  */
+  for(const reservation of data){
+
+    await supabaseClient.rpc(
+      "finalize_missed_reservation",
+      {
+        p_reservation_id:reservation.id
+      }
+    );
+
+  }
+
+
+  await loadUser();
+}
+
+
+/* =====================================================
+   보안/문자열 처리
+   ===================================================== */
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+function escapeForQuery(value){
+
+  return String(value)
+    .replaceAll("%","")
+    .replaceAll(",","")
+    .replaceAll(".","")
+    .replaceAll("(","")
+    .replaceAll(")","");
+}
+
+
+/* =====================================================
+   시작
+   ===================================================== */
+
+supabaseClient.auth.onAuthStateChange(
+  async(event,session)=>{
+
+    currentUser =
+      session?.user || null;
+
+    if(currentUser){
+      await loadUser();
+    }else{
+      currentProfile=null;
+      updateHeader();
+      loadHome();
     }
+  }
+);
 
 
-    if (page === "mypage") {
+loadUser();
 
-        showMyReservations();
+</script>
 
-    }
-
-}
-
-
-/* -------------------------
-   로그인 / 회원가입
-------------------------- */
-
-function authMode(mode) {
-
-    document
-        .getElementById("loginBox")
-        .classList.toggle(
-            "hidden",
-            mode !== "login"
-        );
-
-
-    document
-        .getElementById("signupBox")
-        .classList.toggle(
-            "hidden",
-            mode !== "signup"
-        );
-
-}
-
-
-/* 회원가입 */
-
-function signup() {
-
-    const id =
-        document
-        .getElementById("signupId")
-        .value
-        .trim();
-
-    const pw =
-        document
-        .getElementById("signupPw")
-        .value;
-
-    const display =
-        document
-        .getElementById("displayName")
-        .value
-        .trim();
-
-
-    if (!id || !pw || !display) {
-
-       
+</body>
+    </html>
