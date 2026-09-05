@@ -448,7 +448,7 @@ async function signup(){
     먼저 사용자 이름 중복 확인
   */
   const fakeEmail =
-    username + "@ilsa-laundry.local";
+    username + "@ilsa-laundry.com";
 
 
   const {data,error} =
@@ -543,7 +543,7 @@ async function login(){
 async function loginWithUser(username,password){
 
   const fakeEmail =
-    username + "@ilsa-laundry.local";
+    username + "@ilsa-laundry.com";
 
   const {data,error} =
     await supabaseClient.auth.signInWithPassword({
