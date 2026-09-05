@@ -458,8 +458,18 @@ async function signup(){
     });
 
   if(error){
+
+  if(
+    error.message.includes("already") ||
+    error.message.includes("exists") ||
+    error.message.includes("duplicate")
+  ){
+    alert("이미 사용 중인 사용자 이름입니다.");
+  }else{
     alert("회원가입 실패:\n" + error.message);
-    return;
+  }
+
+  return;
   }
 
   if(!data.user){
