@@ -447,29 +447,6 @@ async function signup(){
   /*
     먼저 사용자 이름 중복 확인
   */
-  const {data:existing,error:searchError} =
-    await supabaseClient
-      .from("profiles")
-      .select("id")
-      .eq("username",username)
-      .maybeSingle();
-
-  if(searchError){
-    alert("회원 확인 중 오류가 발생했습니다.");
-    console.error(searchError);
-    return;
-  }
-
-  if(existing){
-    alert("이미 사용 중인 사용자 이름입니다.");
-    return;
-  }
-
-
-  /*
-    Supabase Auth는 이메일 형식을 사용하므로
-    내부적으로 가짜 이메일 주소를 사용한다.
-  */
   const fakeEmail =
     username + "@ilsa-laundry.local";
 
