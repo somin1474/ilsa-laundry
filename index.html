@@ -443,65 +443,32 @@ async function signup(){
     return;
   }
 
-
-  /*
-    먼저 사용자 이름 중복 확인
-  */
-  const fakeEmail =
-    username + "@ilsa-laundry.com";
-
-
-  const {data,error} =
-    await supabaseClient.auth.signUp({
-      email:fakeEmail,
-      password:password
-    });
-
-  if(error){
-
-  if(
-    error.message.includes("already") ||
-    error.message.includes("exists") ||
-    error.message.includes("duplicate")
-  ){
-    alert("이미 사용 중인 사용자 이름입니다.");
-  }else{
-    alert("회원가입 실패:\n" + error.message);
-  }
-
-  return;
-  }
-
-  if(!data.user){
-    alert("회원가입에 실패했습니다.");
-    return;
-  }
-
-
-  /*
-    profiles에 사용자 정보 저장
-  */
-  const {error:profileError} =
-    await supabaseClient
-      .from("profiles")
-      .insert({
-        id:data.user.id,
-        username:username,
-        display_name:displayName
-      });
-
-  if(profileError){
-
-    console.error(profileError);
-
-    alert(
-      "계정은 만들어졌지만 프로필 저장에 실패했습니다.\n" +
-      "관리자에게 문의해주세요."
+  const { data, error } =
+    await supabaseClient.functions.invoke(
+      "quick-endpoint",
+      {
+        body:{
+          action:"signup",
+          username:username,
+          password:password,
+          displayName:displayName
+        }
+      }
     );
 
+  if(error){
+    console.error(error);
+    alert("회원가입 실패:\n" + error.message);
     return;
   }
 
+  if(!data || !data.success){
+    alert(
+      "회원가입 실패:\n" +
+      (data?.error || "알 수 없는 오류")
+    );
+    return;
+  }
 
   alert("회원가입이 완료되었습니다!");
 
@@ -511,8 +478,6 @@ async function signup(){
 
   await loginWithUser(username,password);
 }
-
-
 /* =====================================================
    로그인
    ===================================================== */
@@ -542,17 +507,41 @@ async function login(){
 
 async function loginWithUser(username,password){
 
-  const fakeEmail =
-    username + "@ilsa-laundry.com";
-
-  const {data,error} =
-    await supabaseClient.auth.signInWithPassword({
-      email:fakeEmail,
-      password:password
-    });
+  const { data, error } =
+    await supabaseClient.functions.invoke(
+      "quick-endpoint",
+      {
+        body:{
+          action:"login",
+          username:username,
+          password:password
+        }
+      }
+    );
 
   if(error){
+    console.error(error);
     alert("로그인 실패:\n" + error.message);
+    return;
+  }
+
+  if(!data || !data.success || !data.session){
+    alert(
+      "로그인 실패:\n" +
+      (data?.error || "사용자 이름 또는 비밀번호가 올바르지 않습니다.")
+    );
+    return;
+  }
+
+  const { error: sessionError } =
+    await supabaseClient.auth.setSession({
+      access_token:data.session.access_token,
+      refresh_token:data.session.refresh_token
+    });
+
+  if(sessionError){
+    console.error(sessionError);
+    alert("로그인 세션을 설정하지 못했습니다.");
     return;
   }
 
@@ -564,8 +553,6 @@ async function loginWithUser(username,password){
 
   showPage("home");
 }
-
-
 /* =====================================================
    로그아웃
    ===================================================== */
